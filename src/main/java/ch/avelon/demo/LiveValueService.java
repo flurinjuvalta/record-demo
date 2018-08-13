@@ -6,13 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
-/**
- * @author Flurin Juvalta <flurin.juvalta@avelon.ch>
- */
 @Service
 public class LiveValueService {
 
-    public static final Map<Long, Measurement> latestMeasurements = new HashMap<>();
+    private static final Map<Long, Measurement> latestMeasurements = new HashMap<>();
 
     public void addMeasurement(final Measurement measurement) {
         latestMeasurements.compute(measurement.getSensorId(), (k, v) ->
