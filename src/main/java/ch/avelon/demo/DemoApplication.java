@@ -31,14 +31,11 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    @PostMapping(value = "/sensors")
-    public long addSensor(@RequestBody final Sensor sensor) {
-        return sensorRepository.save(sensor).getId();
-    }
+    // Endpoints for Sensor
 
-    @GetMapping(value = "/sensors")
-    public Iterable<Sensor> getAllSensors() {
-        return sensorRepository.findAll();
+    @PostMapping(value = "/sensors")
+    public void registerSensor(@RequestBody final Sensor sensor) {
+        sensorRepository.save(sensor);
     }
 
     @PostMapping(value = "/measurements")
@@ -48,18 +45,25 @@ public class DemoApplication {
         return id;
     }
 
+    // Endpoints for UI
+
+    @GetMapping(value = "/sensors")
+    public Iterable<Sensor> getAllSensors() {
+        return sensorRepository.findAll();
+    }
+
     @GetMapping(value = "/latest/measurements/")
     public Collection<Measurement> getAllLatestMeasurements() {
         return liveValueService.getAll();
     }
 
-    @GetMapping(value = "/latest/measurements/{sensorId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/latest/measurements/{sensorId}",produces = MediaType.APPLICATION_JSON_VALUE)
     public Measurement getLatestMeasurement(@PathVariable long sensorId) {
         return liveValueService.getLatestMeasurement(sensorId);
     }
 
-    @GetMapping(value = "/sensors/{sensorId}/measurements/{fromTs}/{toTs}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MeasurementPoint> test(@PathVariable long sensorId, @PathVariable int fromTs, @PathVariable int toTs) {
+    @GetMapping(value= "/sensors/{sensorId}/measurements/{fromTs}/{toTs}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MeasurementPoint> interval(@PathVariable long sensorId, @PathVariable int fromTs, @PathVariable int toTs) {
         return measurementRepository.findBySensorInInterval(sensorId, fromTs, toTs);
     }
 

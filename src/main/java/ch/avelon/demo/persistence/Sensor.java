@@ -9,11 +9,10 @@ import lombok.Data;
 @Data
 public class Sensor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String location;
     @JsonIgnore
-    @OneToMany(mappedBy = "sensor")
+    @OneToMany
     private List<Measurement> measurements;
 }
