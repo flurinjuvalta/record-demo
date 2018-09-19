@@ -3,11 +3,6 @@ package ch.avelon.demo;
 import ch.avelon.demo.persistence.*;
 import java.util.Collection;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,32 +47,18 @@ public class DemoApplication {
         return sensorRepository.findAll();
     }
 
-    @GetMapping(value = "/latest/measurements/")
+    @GetMapping(value = "/liveValues/")
     public Collection<Measurement> getAllLatestMeasurements() {
         return liveValueService.getAll();
     }
 
-    @GetMapping(value = "/latest/measurements/{sensorId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/liveValues/{sensorId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Measurement getLatestMeasurement(@PathVariable long sensorId) {
-        return liveValueService.getLatestMeasurement(sensorId);
+        return liveValueService.getLiveValue(sensorId);
     }
 
-    @GetMapping(value= "/sensors/{sensorId}/measurements/{fromTs}/{toTs}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/sensors/{sensorId}/measurements/{fromTs}/{toTs}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MeasurementPoint> interval(@PathVariable long sensorId, @PathVariable int fromTs, @PathVariable int toTs) {
         return measurementRepository.findBySensorInInterval(sensorId, fromTs, toTs);
-    }
-
-    @PostMapping(value = "/calculate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public double calculate(@RequestBody String formula) throws ScriptException {
-        final Pattern p = Pattern.compile("\\$(\\d+)");
-        final Matcher m = p.matcher(formula);
-        final SimpleBindings values = new SimpleBindings();
-
-        while (m.find())
-        {
-            values.put(m.group(0), liveValueService.getLatestMeasurement(Long.valueOf(m.group(1))).getRecordedValue());
-        }
-
-        return (double) new ScriptEngineManager().getEngineByName("JavaScript").eval(formula, values);
     }
 }

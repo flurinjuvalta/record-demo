@@ -9,18 +9,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class LiveValueService {
 
-    private static final Map<Long, Measurement> latestMeasurements = new HashMap<>();
+    private static final Map<Long, Measurement> liveValues = new HashMap<>();
 
     public void addMeasurement(final Measurement measurement) {
-        latestMeasurements.compute(measurement.getSensorId(), (k, v) ->
+        liveValues.compute(measurement.getSensorId(), (k, v) ->
                 v == null || v.getRecordTime() <= measurement.getRecordTime() ? measurement : v);
     }
 
-    public Measurement getLatestMeasurement(final long sensorId) {
-        return latestMeasurements.get(sensorId);
+    public Measurement getLiveValue(final long sensorId) {
+        return liveValues.get(sensorId);
     }
 
     public Collection<Measurement> getAll() {
-        return latestMeasurements.values();
+        return liveValues.values();
     }
 }
